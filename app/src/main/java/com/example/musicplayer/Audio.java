@@ -1,30 +1,28 @@
 package com.example.musicplayer;
 
-
-
 /**
  * Class for storing and accessing song/album/artist info
  **/
 public class Audio{
 
     private String title;
-    private String songURL;
-    //private String album;
+    private String data;
+    private String album;
     private String artist;
 
-    public Audio(String title, String artist, /* String album, */ String songURL){
-        this.songURL = songURL;
+    public Audio(String title, String artist, String album, String data){
+        this.data = data;
         this.title = title;
-        //this.album = album;
+        this.album = album;
         this.artist = artist;
     }
 
-    public String getSongURL(){
-        return songURL;
+    public String getData(){
+        return data;
     }
 
-    public void setSongURL(String songURL){
-        this.songURL = songURL;
+    public void setData(String songURL){
+        this.data = songURL;
     }
 
     public String getTitle(){
@@ -35,14 +33,14 @@ public class Audio{
         this.title = title;
     }
 
-   /* public String getAlbum() {
-        return album;
-    }
+   public String getAlbum() {
+       return album;
+   }
 
     public void setAlbum(String album) {
         this.album = album;
     }
-    */
+
     public String getArtist() {
         return artist;
     }

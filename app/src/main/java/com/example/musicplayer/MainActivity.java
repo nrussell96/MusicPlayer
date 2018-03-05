@@ -1,126 +1,66 @@
 package com.example.musicplayer;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
-import android.widget.SeekBar;
-
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MediaPlayer mp;
-    private RecyclerView recyclerView;
-    SeekBar seekBar;
-    SongAdapter songAdapter;
-//    AudioAdapter audioAdapter;
-//    private boolean serviceBound = false;
-    private ArrayList<Audio> songs = new ArrayList<Audio>();
-    private Handler myHandler = new Handler();
+    public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.musicplayer.PlayNewAudio";
 
+    private MusicPlayerService mp;
+    private boolean serviceBound = false;
+    ArrayList<Audio> songs;
+
+    private void initRecyclerView() {
+        if (songs.size() > 0) {
+            RecyclerView recyclerView = findViewById(R.id.recyclerview);
+            SongAdapter adapter = new SongAdapter(songs, getApplication());
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+            recyclerView.addOnItemTouchListener(new TouchListener(this, new onItemClickListener() {
+                @Override
+                public void onItemClick(View view, int i) {
+                    playSong(i);
+                }
+            }));
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
-        songAdapter = new SongAdapter(this,songs);
-        recyclerView.setAdapter(songAdapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                linearLayoutManager.getOrientation());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-        songAdapter.setOnItemClickListener(new SongAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(final Button b, View view, final Audio obj, int position) {
-                if(b.getText().equals("Stop")){
-                    mp.stop();
-                    mp.reset();
-                    mp.release();
-                    mp = null;
-                    b.setText("Play");
-                }else {
 
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                mp = new MediaPlayer();
-                                mp.setDataSource(obj.getSongURL());
-                                mp.prepareAsync();
-                                mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                    @Override
-                                    public void onPrepared(MediaPlayer mp) {
-                                        mp.start();
-                                        seekBar.setProgress(0);
-                                        seekBar.setMax(mp.getDuration());
-                                        Log.d("Prog", "run: " + mp.getDuration());
-                                    }
-                                });
-                                b.setText("Stop");
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-
-
-                            }catch (Exception e){}
-                        }
-
-                    };
-                    myHandler.postDelayed(runnable,100);
-
-                }
-            }
-        });
         checkPermission();
-
-        Thread t = new runThread();
-        t.start();
+        initRecyclerView();
     }
 
-    public class runThread extends Thread {
-
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.d("Thread", "run: " + 1);
-                if (mp != null) {
-                    seekBar.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            seekBar.setProgress(mp.getCurrentPosition());
-                        }
-                    });
-
-                    Log.d("Thread", "run: " + mp.getCurrentPosition());
-                }
-            }
-        }
-    }
-
-    /* Permissions reference: https://developer.android.com/guide/topics/permissions/requesting.html */
-
+    // Permissions reference: https://developer.android.com/guide/topics/permissions/requesting.html
+    //method to request permission to use device storage
     private void checkPermission() {
         if(Build.VERSION.SDK_INT>=23){
             if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -129,17 +69,17 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
         }
-            loadAudio();
+        loadAudio();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-     @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
 
             case 123:
                 if ((grantResults.length > 0) && (grantResults[0] ==
-                PackageManager.PERMISSION_GRANTED)) {
+                        PackageManager.PERMISSION_GRANTED)) {
                     checkPermission();
                 }
                 break;
@@ -163,31 +103,28 @@ public class MainActivity extends AppCompatActivity {
                 sortOrder);
 
         if (cursor != null && cursor.getCount() > 0) {
-            if(cursor.moveToFirst()){
-                do{
-                    String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
-                    String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                    String songURL = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+            songs = new ArrayList<>();
+            while (cursor.moveToNext()){
+                String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 
-                    Audio song = new Audio(songName,artist,songURL);
-                    songs.add(song);
-
-                }while (cursor.moveToNext());
+                //Audio song = new Audio(songName, artist, album, data);
+                songs.add(new Audio(songName, artist, album, data));
             }
             cursor.close();
-            songAdapter = new SongAdapter(MainActivity.this,songs);
         }
     }
 
-    /*    Old methods I may reuse as I implement more features
 
         private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
 
 
-            SongAdapter.LocalBinder binder = (SongAdapter.LocalBinder) service;
-            player = binder.getService();
+            MusicPlayerService.LocalBinder binder = (MusicPlayerService.LocalBinder) service;
+            mp = binder.getService();
             serviceBound = true;
 
             //shows that the player service was bounded in-app
@@ -201,20 +138,30 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void playSong(String song){
+    private void playSong(int songIndex){
 
         if(!serviceBound){
-            Intent playerIntent = new Intent(this, SongAdapter.class);
-            playerIntent.putExtra("song", song);
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            storage.storeAudio(songs);
+            storage.storeAudioIndex(songIndex);
+
+            Intent playerIntent = new Intent(this, MusicPlayerService.class);
             startService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         }else{
             //service active
             //send media/w broadcast receiver
-        }
-    } */
+            StorageUtil storage = new StorageUtil(getApplicationContext());
+            storage.storeAudioIndex(songIndex);
 
-/*    @Override
+            //Service is active
+            //Send a broadcast to the service -> PLAY_NEW_AUDIO
+            Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean("ServiceState", serviceBound);
         super.onSaveInstanceState(savedInstanceState);
@@ -232,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
         if (serviceBound) {
             unbindService(serviceConnection);
             //service is active
-            player.stopSelf();
+            mp.stopSelf();
         }
-    } */
+    }
 
 }
+
