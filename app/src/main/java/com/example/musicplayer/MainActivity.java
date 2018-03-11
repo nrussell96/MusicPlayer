@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (cursor != null && cursor.getCount() > 0) {
             songs = new ArrayList<>();
             while (cursor.moveToNext()){
-                String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME));
+                String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
                 String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
                 String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
                 String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
