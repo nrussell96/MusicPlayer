@@ -234,12 +234,12 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
                 break;
             case AudioManager.AUDIOFOCUS_LOSS:
                 // Lost focus for an unbounded amount of time: stop playback and release media player
-                if (mediaPlayer.isPlaying()){
-                    mediaPlayer.stop();
-                }
-                mediaPlayer.release();
-                mediaPlayer = null;
-                break;
+                    if (mediaPlayer.isPlaying() && mediaPlayer!=null) {
+                        mediaPlayer.stop();
+                    }
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                    break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                 // Lost focus for a short time, stop play, but don't release
                 if (mediaPlayer.isPlaying()){
@@ -286,7 +286,7 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
         mediaPlayer.setOnSeekCompleteListener(this);
         mediaPlayer.setOnInfoListener(this);
 
-        mediaPlayer.reset();
+        //mediaPlayer.reset();
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
@@ -629,7 +629,11 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
             //A PLAY_NEW_AUDIO action received
             //reset mediaPlayer to play the new Audio
             stopMedia();
-           // mediaPlayer.reset();
+
+            mediaPlayer.reset();
+
+            mediaPlayer.release();
+            //mediaPlayer = new MediaPlayer();
             initMediaPlayer();
             updateMetaData();
             buildNotification(PlaybackStatus.PLAYING);

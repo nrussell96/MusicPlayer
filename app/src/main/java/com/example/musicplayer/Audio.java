@@ -21,8 +21,8 @@ public class Audio{
         return data;
     }
 
-    public void setData(String songURL){
-        this.data = songURL;
+    public void setData(String data){
+        this.data = data;
     }
 
     public String getTitle(){
