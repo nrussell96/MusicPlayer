@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.musicplayer">
 
-    // Allows app permissions to access media files over the internet
+    <!--Allows app permissions to access media files over the internet-->
     <uses-permission android:name="android.permission.INTERNET" />
 
     //control media playback
@@ -13,6 +13,8 @@
 
     //pull song data from outside device
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"

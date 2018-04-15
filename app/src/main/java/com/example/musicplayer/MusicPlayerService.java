@@ -105,7 +105,7 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
         }
 
         //Request audio focus
-        if (requestAudioFocus() == false) {
+        if (!requestAudioFocus()) {
             //Could not gain focus
             stopSelf();
         }
@@ -513,7 +513,7 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
     //create notification bar for app, play/pause/next
     private void buildNotification(PlaybackStatus playbackStatus) {
 
-        /**
+        /*
          * Notification actions -> playbackAction()
          *  0 -> Play
          *  1 -> Pause
@@ -587,7 +587,9 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
 
     private void removeNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(NOTIFICATION_ID);
+        if(notificationManager!=null) {
+            notificationManager.cancel(NOTIFICATION_ID);
+        }
     }
 
     private void handleIncomingActions(Intent playbackAction) {
@@ -632,7 +634,7 @@ public class MusicPlayerService  extends Service implements MediaPlayer.OnComple
 
             mediaPlayer.reset();
 
-            mediaPlayer.release();
+            //mediaPlayer.release();
             //mediaPlayer = new MediaPlayer();
             initMediaPlayer();
             updateMetaData();

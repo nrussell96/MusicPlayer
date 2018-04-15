@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Music Player</string>
+
+    <string name="songs">Songs</string>
+    <string name="artist">Artist</string>
+    <string name="album">Album</string>
+    <string name="default_notification_channel_id">default</string>
+    <string name="title">Title</string>
+
 </resources>

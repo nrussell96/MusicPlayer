@@ -7,6 +7,13 @@
     android:fitsSystemWindows="true"
     tools:context="com.example.musicplayer.MainActivity">
 
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" />
+    <include layout="@layout/song_page" />
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
@@ -42,8 +49,6 @@
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/song_page" />
 
     <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

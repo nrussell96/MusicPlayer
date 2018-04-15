@@ -10,6 +10,10 @@ public class Audio{
     private String album;
     private String artist;
 
+    public Audio(){
+
+    }
+
     public Audio(String title, String artist, String album, String data){
         this.data = data;
         this.title = title;

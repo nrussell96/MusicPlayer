@@ -8,23 +8,11 @@
 
     <!--android:background="#00bcd4"-->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="10dp">
-
-        <ImageButton
-            android:id="@+id/playPause"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@android:drawable/ic_media_play"
-            android:layout_gravity="center_vertical"
-            android:tint="@color/colorAccent"
-            android:foregroundGravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@android:color/white"  />
 
         <TextView
             android:id="@+id/songTitle"
@@ -35,18 +23,7 @@
             android:text="@string/title"
             android:textColor="@android:color/black"
             android:textSize="20sp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/songArtist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:foregroundGravity="center_horizontal"
-            android:text="@string/artist"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold|italic" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/songAlbum"
@@ -56,8 +33,20 @@
             android:foregroundGravity="center_horizontal"
             android:text="@string/album"
             android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold|italic" />
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/songArtist"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:foregroundGravity="center_horizontal"
+            android:text="@string/artist"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
 
 
     </LinearLayout>

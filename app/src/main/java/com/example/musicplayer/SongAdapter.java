@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongHolder> {
 
-    private List<Audio> songs = Collections.emptyList();
+    private List<Audio> songs;
     private Context context;
 
     public SongAdapter(List<Audio> songs, Context context) {
@@ -31,7 +31,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder> {
     public void onBindViewHolder(SongHolder songHolder, int i) {
     //    final Audio song = songs.get(i);
         songHolder.songName.setText(songs.get(i).getTitle());
-    //    songHolder.artist.setText(songs.get(i).getArtist());
+        songHolder.artist.setText(songs.get(i).getArtist());
+        songHolder.album.setText(songs.get(i).getAlbum());
     }
 
     @Override
@@ -46,12 +47,15 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder> {
 }
     class SongHolder extends RecyclerView.ViewHolder {
         TextView songName;
+        TextView artist;
+        TextView album;
         ImageView play;
         SongHolder(View itemView) {
             super(itemView);
             songName = itemView.findViewById(R.id.songTitle);
-            //artist = itemView.findViewById(R.id.tvArtistName);
-            play = itemView.findViewById(R.id.playPause);
+            artist = itemView.findViewById(R.id.songArtist);
+            album = itemView.findViewById(R.id.songAlbum);
+            //play = itemView.findViewById(R.id.playPause);
         }
     }
 
