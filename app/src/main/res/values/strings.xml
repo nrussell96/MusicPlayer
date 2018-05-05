@@ -6,5 +6,6 @@
     <string name="album">Album</string>
     <string name="default_notification_channel_id">default</string>
     <string name="title">Title</string>
+    <string name="genre">Genre</string>
 
 </resources>
