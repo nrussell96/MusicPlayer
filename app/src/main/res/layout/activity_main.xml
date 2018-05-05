@@ -7,11 +7,6 @@
     android:fitsSystemWindows="true"
     tools:context="com.example.musicplayer.MainActivity">
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0" />
     <include layout="@layout/song_page" />
 
     <android.support.design.widget.AppBarLayout
@@ -50,13 +45,12 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <!--<android.support.design.widget.FloatingActionButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/stat_sys_headset"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end" />-->
+        app:layout_anchorGravity="bottom|end" />
 
 </android.support.design.widget.CoordinatorLayout>

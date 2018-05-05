@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Collections;
 import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter<SongHolder> {
@@ -55,7 +54,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder> {
             songName = itemView.findViewById(R.id.songTitle);
             artist = itemView.findViewById(R.id.songArtist);
             album = itemView.findViewById(R.id.songAlbum);
-            //play = itemView.findViewById(R.id.playPause);
+            play = itemView.findViewById(R.id.playPause);
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,8 +19,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Audio> songs;
 
     private void initRecyclerView() {
-        if (songs.size() > 0) {
+        if (songs.size() > 0 ) {
             RecyclerView recyclerView = findViewById(R.id.recyclerview);
             SongAdapter adapter = new SongAdapter(songs, getApplication());
             recyclerView.setAdapter(adapter);
@@ -44,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                     playSong(i);
                 }
             }));
-
         }
     }
 
@@ -58,6 +60,75 @@ public class MainActivity extends AppCompatActivity {
 
         checkPermission();
         initRecyclerView();
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        //initControls();
+        //FloatingActionButton fab = findViewById(R.id.fab);
+
+    }
+
+    //controls to establish volume seekbar to manipulate volume levels inside app
+    /*private void initControls()
+    {
+        try
+        {
+            vSeekbar = findViewById(R.id.seekBar);
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            vSeekbar.setMax(audioManager
+                    .getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            vSeekbar.setProgress(audioManager
+                    .getStreamVolume(AudioManager.STREAM_MUSIC));
+
+
+            vSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+            {
+                @Override
+                public void onStopTrackingTouch(SeekBar arg0)
+                {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar arg0)
+                {
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar arg0, int progress, boolean arg2)
+                {
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                            progress, 0);
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }*/
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.albums_menu, menu);
+        //inflater.inflate(R.menu.artists_menu, menu);
+        //inflater.inflate(R.menu.genres_menu, menu);
+        inflater.inflate(R.menu.songs_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        //these would allow the user to click the menu buttons and switch activities
+        if (id == R.id.action_bar_activity_content){
+            Toast.makeText(MainActivity.this, "Action Selected", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        //add more if statements for other menu buttons here
+
+        return super.onOptionsItemSelected(item);
     }
 
     // Permissions reference: https://developer.android.com/guide/topics/permissions/requesting.html
@@ -103,23 +174,26 @@ public class MainActivity extends AppCompatActivity {
         Cursor cursor = contentResolver.query(uri, null, selection, null,
                 sortOrder);
 
-        if (cursor != null && cursor.getCount() > 0) {
-            songs = new ArrayList<>();
-            while (cursor.moveToNext()){
-                String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
-                String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+        try {
+            if (cursor != null && cursor.getCount() > 0) {
+                songs = new ArrayList<>();
+                while (cursor.moveToNext()) {
+                    String songName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+                    String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
+                    String album = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
+                    String data = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 
-                //Audio song = new Audio(songName, artist, album, data);
-                songs.add(new Audio(songName, artist, album, data));
+                    //Audio song = new Audio(songName, artist, album, data);
+                    songs.add(new Audio(songName, artist, album, data));
+                }
+                cursor.close();
             }
-            cursor.close();
+        }catch(IllegalStateException e){
+            //handle exception
         }
     }
 
-
-        private ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
 
